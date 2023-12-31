@@ -1,0 +1,189 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - "main"
+    paths:
+      - "src/**.tsx?"
+      - "package.json"
+      - "tsconfig.json"
+      - ".github/workflows/ci.yml"
+  pull_request:
+    paths:
+      - "src/**.tsx?"
+      - "scripts/**"
+      - "package.json"
+      - "tsconfig.json"
+      - ".github/workflows/ci.yml"
+
+env:
+  CI: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+
+      - uses: pnpm/action-setup@v2
+        name: Install pnpm
+        with:
+          version: 8
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - uses: actions/cache@v3
+        name: Setup pnpm cache
+        with:
+          path: |
+            ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install Dependencies
+        run: pnpm i
+
+      - name: Lint
+        run: |
+          pnpm run lint
+
+  test-ve:
+    runs-on: ${{ matrix.os }}
+    name: test (${{ matrix.pm }}, ${{ matrix.os }})
+    services:
+      verdaccio:
+        image: verdaccio/verdaccio:5
+        ports:
+          - 4873:4873
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        pm: ["pnpm", "npm", "yarn"]
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: "recursive"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+
+      - uses: pnpm/action-setup@v2
+        name: Install pnpm
+        with:
+          version: 8
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - uses: actions/cache@v3
+        name: Setup pnpm cache
+        with:
+          path: |
+            ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install Dependencies
+        run: pnpm i
+
+      - name: build
+        run: |
+          pnpm esb
+
+      - name: login to verdaccio
+        run: npx npm-cli-login -u test -p 1234 -e test@domain.test -r http://localhost:4873
+
+      - name: publish to verdaccio
+        run: |
+          npm publish --registry http://localhost:4873
+
+      - name: config for test
+        run: |
+          mkdir ../.temp
+          ${{ matrix.pm }} config set registry http://localhost:4873/
+
+      - name: Test via ${{ matrix.pm }}
+        working-directory: ../.temp/
+        timeout-minutes: 5
+        run: |
+          ${{ matrix.pm }} create hexo
+
+  test-ln:
+    runs-on: ${{ matrix.os }}
+    name: test (${{ matrix.pm }}, ${{ matrix.os }})
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest]
+        pm: ["pnpm", "npm"]
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: "recursive"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+
+      - uses: pnpm/action-setup@v2
+        name: Install pnpm
+        with:
+          version: 8
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - uses: actions/cache@v3
+        name: Setup pnpm cache
+        with:
+          path: |
+            ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install Dependencies
+        run: pnpm i
+
+      - name: build
+        run: |
+          pnpm esb
+
+      - name: pack
+        run: |
+          npm pack
+
+      - name: config for test
+        run: |
+          mkdir ../temp
+          node scripts/getversion.mjs
+
+      - name: Link via ${{ matrix.pm }}
+        working-directory: ../temp/
+        timeout-minutes: 5
+        run: |
+          ${{ matrix.pm }} add ../create-hexo/create-hexo-${{env.version}}.tgz
+
+      - name: Test via ${{ matrix.pm }}
+        working-directory: ../temp/
+        timeout-minutes: 5
+        run: |
+          ${{ matrix.pm }} exec create-hexo test
