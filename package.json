@@ -1,0 +1,71 @@
+{
+  "name": "create-hexo",
+  "version": "0.0.0",
+  "description": "Hexo site initializer",
+  "keywords": [
+    "hexo",
+    "initializer"
+  ],
+  "homepage": "https://github.com/uiolee/create-hex",
+  "bugs": {
+    "url": "https://github.com/uiolee/create-hex/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/uiolee/create-hex.git"
+  },
+  "license": "MPL-2.0",
+  "author": "uiolee (https://github.com/uiolee)",
+  "type": "module",
+  "main": "bin/index.mjs",
+  "module": "bin/index.mjs",
+  "bin": {
+    "create-hexo": "bin/index.mjs"
+  },
+  "files": [
+    "bin",
+    "hash",
+    "hexo-starter",
+    "!hexo-starter/.github",
+    "!hexo-starter/.git"
+  ],
+  "scripts": {
+    "build": "tsc -b -f",
+    "dev": "tsc -b -w -v",
+    "esb": "rm -rf bin && node ./scripts/esb.mjs ",
+    "hash": "bash ./scripts/gethash.sh",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "sort": "pnpm dlx sort-package-json",
+    "test": "jest",
+    "test:cov": "jest --coverage --coverageReporters=html text",
+    "test:lcov": "jest --coverage --coverageReporters=lcovonly text"
+  },
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "commander": "^11.1.0",
+    "execa": "^8.0.1",
+    "fs-extra": "^11.2.0"
+  },
+  "devDependencies": {
+    "@actions/core": "^1.10.1",
+    "@jest/globals": "^29.7.0",
+    "@jest/types": "^29.6.3",
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^20.10.5",
+    "@typescript-eslint/eslint-plugin": "^6.16.0",
+    "@typescript-eslint/parser": "^6.16.0",
+    "esbuild": "^0.19.10",
+    "esbuild-jest": "^0.5.0",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-jest": "^27.6.0",
+    "eslint-plugin-prettier": "^5.1.2",
+    "jest": "^29.7.0",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "#packageManager": "pnpm@8.13.1+sha256.9e5f62ce5f2b7d4ceb3c2848f41cf0b33032c24d683c7088b53f62b1885fb246"
+}
