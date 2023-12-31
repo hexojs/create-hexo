@@ -1,0 +1,3 @@
+[submodule "hexo-starter"]
+	path = hexo-starter
+	url = git@github.com:hexojs/hexo-starter.git
