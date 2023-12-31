@@ -6,13 +6,13 @@
     "hexo",
     "initializer"
   ],
-  "homepage": "https://github.com/uiolee/create-hex",
+  "homepage": "https://github.com/uiolee/create-hexo",
   "bugs": {
-    "url": "https://github.com/uiolee/create-hex/issues"
+    "url": "https://github.com/uiolee/create-hexo/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/uiolee/create-hex.git"
+    "url": "https://github.com/uiolee/create-hexo"
   },
   "license": "MPL-2.0",
   "author": "uiolee (https://github.com/uiolee)",
