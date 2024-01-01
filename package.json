@@ -26,6 +26,7 @@
     "bin",
     "hash",
     "hexo-starter",
+    "hexo-starter/.gitignore",
     "!hexo-starter/.github",
     "!hexo-starter/.git"
   ],
