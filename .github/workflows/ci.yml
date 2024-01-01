@@ -25,6 +25,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: "recursive"
 
       - uses: actions/setup-node@v4
         with:
@@ -56,9 +58,12 @@ jobs:
         run: |
           pnpm run lint
 
+  build:
+    uses: ./.github/workflows/build.yml
+
   test-ve:
+    needs: build
     runs-on: ${{ matrix.os }}
-    name: test (${{ matrix.pm }}, ${{ matrix.os }})
     services:
       verdaccio:
         image: verdaccio/verdaccio:5
@@ -75,40 +80,28 @@ jobs:
         with:
           submodules: "recursive"
 
+      - uses: actions/download-artifact@v4
+        with:
+          name: artifact
+
       - uses: actions/setup-node@v4
         with:
           node-version: "lts/*"
 
       - uses: pnpm/action-setup@v2
         name: Install pnpm
+        if: ${{ matrix.pm == 'pnpm' }}
         with:
           version: 8
 
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-
-      - uses: actions/cache@v3
-        name: Setup pnpm cache
-        with:
-          path: |
-            ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-
-      - name: Install Dependencies
-        run: pnpm i
-
-      - name: build
-        run: |
-          pnpm esb
-
-      - name: login to verdaccio
+      - name: login to 'verdaccio'
         run: npx npm-cli-login -u test -p 1234 -e test@domain.test -r http://localhost:4873
 
-      - name: publish to verdaccio
+      - name: version for 'verdaccio'
+        run: |
+          npm version patch --commit-hooks false --git-tag-version false
+
+      - name: publish to 'verdaccio'
         run: |
           npm publish --registry http://localhost:4873
 
@@ -124,8 +117,8 @@ jobs:
           ${{ matrix.pm }} create hexo
 
   test-ln:
+    needs: build
     runs-on: ${{ matrix.os }}
-    name: test (${{ matrix.pm }}, ${{ matrix.os }})
     strategy:
       matrix:
         os: [windows-latest, macos-latest]
@@ -134,8 +127,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        # with:
+        #   submodules: "recursive"
+
+      - uses: actions/download-artifact@v4
         with:
-          submodules: "recursive"
+          name: artifact
 
       - uses: actions/setup-node@v4
         with:
@@ -145,31 +142,21 @@ jobs:
         name: Install pnpm
         with:
           version: 8
-
       - name: Get pnpm store directory
         shell: bash
         run: |
           echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-
       - uses: actions/cache@v3
         name: Setup pnpm cache
+        if: ${{ inputs.cache }}
         with:
           path: |
             ${{ env.STORE_PATH }}
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
-
       - name: Install Dependencies
-        run: pnpm i
-
-      - name: build
-        run: |
-          pnpm esb
-
-      - name: pack
-        run: |
-          npm pack
+        run: pnpm add @actions/core -D
 
       - name: config for test
         run: |

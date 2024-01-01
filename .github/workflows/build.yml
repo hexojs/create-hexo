@@ -1,0 +1,73 @@
+on:
+  workflow_call:
+    inputs:
+      cache:
+        description: "(boolean) use actions/cache"
+        required: false
+        default: true
+        type: boolean
+      node_version:
+        description: "(string) "
+        required: false
+        default: "lts/*"
+        type: string
+      runs_on:
+        description: "(string) "
+        required: false
+        default: "ubuntu-latest"
+        type: string
+
+env:
+  CI: true
+
+jobs:
+  build:
+    runs-on: ${{ inputs.runs_on }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: "recursive"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node_version }}
+
+      - uses: pnpm/action-setup@v2
+        name: Install pnpm
+        with:
+          version: 8
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - uses: actions/cache@v3
+        name: Setup pnpm cache
+        if: ${{ inputs.cache }}
+        with:
+          path: |
+            ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install Dependencies
+        run: pnpm i
+
+      - name: Build
+        run: |
+          pnpm esb
+
+      - name: pack
+        run: |
+          npm pack
+
+      - uses: actions/upload-artifact@v4
+        with:
+          retention-days: 1
+          compression-level: 1
+          name: artifact
+          path: |
+            bin
+            *.tgz
