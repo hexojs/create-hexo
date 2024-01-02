@@ -13,7 +13,7 @@ const formatMetafile = (metafile, verbose = true) => {
 };
 
 const result = await esbuild.build({
-  entryPoints: ["src/main.ts"],
+  entryPoints: ["src/index.ts"],
   bundle: true,
   outfile: "bin/index.mjs",
   minify: true,

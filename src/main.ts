@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import { dirname, sep, resolve as pathResolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -247,4 +245,4 @@ const end = async () => {
   logger.timeEnd("create-hexo");
 };
 
-main();
+export { main };
