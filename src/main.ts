@@ -131,7 +131,7 @@ const printUsage = () => {
   logger.group("Usage: ");
   logger.l(`  npm exec ${packageJson.name} [blog_directory]`, "\n");
   logger.l("  npm init hexo [blog_directory]", "\n");
-  logger.l(`  pnpm create ${packageJson.name} [blog_directory]`, "\n");
+  logger.l(`  pnpm create hexo [blog_directory]`, "\n");
   logger.l("  yarn create hexo [blog_directory]", "\n");
   logger.groupEnd();
 };
