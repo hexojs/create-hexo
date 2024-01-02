@@ -74,7 +74,7 @@ jobs:
 
       - name: rename package name
         run: |
-          node .github/workflows/package.cjs
+          node scripts/renamePackage.mjs
 
       - run: npm publish --access public --registry=https://npm.pkg.github.com
         env:

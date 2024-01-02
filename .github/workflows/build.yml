@@ -59,6 +59,11 @@ jobs:
         run: |
           pnpm esb
 
+      - name: get hexo-starter hash
+        shell: bash
+        run: |
+          echo -n $(cat .git/modules/hexo-starter/refs/heads/master) > hash
+
       - name: pack
         run: |
           npm pack
@@ -70,4 +75,5 @@ jobs:
           name: artifact
           path: |
             bin
+            hash
             *.tgz

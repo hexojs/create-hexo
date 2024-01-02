@@ -49,7 +49,6 @@
     "fs-extra": "^11.2.0"
   },
   "devDependencies": {
-    "@actions/core": "^1.10.1",
     "@jest/globals": "^29.7.0",
     "@jest/types": "^29.6.3",
     "@types/fs-extra": "^11.0.4",
