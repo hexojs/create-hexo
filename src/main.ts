@@ -17,7 +17,7 @@ const STARTER_DIR = pathResolve(__dirname, `../${STARTER}/`);
 const RM_FILES = [".git", ".github"];
 const ADD_FILES = ["scripts/.gitkeep", "source/_drafts/.gitkeep"];
 
-type PM = "pnpm" | "npm" | "yarn";
+type PM = "pnpm" | "npm" | "yarn" | "bun";
 interface InitOptions {
   blogName: string;
   blogPath: string;
@@ -107,7 +107,7 @@ const init = () => {
         "-pm, --packageManager <packageManager>",
         "Specify the packageManager which use to Install packages",
       )
-        .choices(["auto", "npm", "pnpm", "yarn"])
+        .choices(["auto", "npm", "pnpm", "yarn", "bun"])
         .default("auto"),
     )
     .version(
@@ -127,10 +127,10 @@ const init = () => {
 
 const printUsage = () => {
   logger.group("Usage: ");
-  logger.l(`  npm exec ${packageJson.name} [blog_directory]`, "\n");
   logger.l("  npm init hexo [blog_directory]", "\n");
   logger.l(`  pnpm create hexo [blog_directory]`, "\n");
   logger.l("  yarn create hexo [blog_directory]", "\n");
+  logger.l("  bun create hexo [blog_directory]", "\n");
   logger.groupEnd();
 };
 
@@ -179,6 +179,8 @@ const checkPackageManager = (): Promise<PM> => {
       pm = "pnpm";
     } else if (UA?.startsWith("yarn") || runPath.includes("yarn")) {
       pm = "yarn";
+    } else if (UA?.startsWith("bun")) {
+      pm = "bun";
     } else {
       pm = "npm";
     }
