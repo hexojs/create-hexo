@@ -11,7 +11,7 @@
   "overrides": [],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "ecmaVersion": "latest",
+    "ecmaVersion": 2020,
     "sourceType": "module"
   },
   "plugins": ["@typescript-eslint"],
@@ -20,5 +20,6 @@
     "linebreak-style": ["error", "unix"],
     "@typescript-eslint/no-explicit-any": ["warn"],
     "@typescript-eslint/no-unused-vars": ["warn"]
-  }
+  },
+  "ignorePatterns": ["dist", "bin"]
 }
