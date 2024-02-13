@@ -1,0 +1,50 @@
+storage: ../.verdaccio-storage
+
+store:
+  memory:
+    limit: 1000
+
+listen:
+  - localhost:4873
+
+auth:
+  htpasswd:
+    file: .htpasswd
+    max_users: 0
+    algorithm: bcrypt
+    rounds: 10
+
+middlewares:
+  audit:
+    enabled: false
+
+uplinks:
+  npmjs:
+    url: https://registry.npmjs.org/
+    cache: false
+  taobao:
+    url: https://registry.npmmirror.com/
+    cache: false
+
+publish:
+  allow_offline: true
+
+packages:
+  "create-hexo":
+    access: $all
+    publish: $all
+    # proxy: npmjs
+  "@*/*":
+    access: $all
+    publish: $all
+    proxy: npmjs
+  "**":
+    access: $all
+    publish: $all
+    proxy: npmjs
+
+web:
+  enable: false
+
+log:
+  - { type: stdout, format: pretty, level: warn }
