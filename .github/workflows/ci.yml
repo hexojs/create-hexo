@@ -30,7 +30,7 @@ jobs:
         with:
           submodules: "recursive"
 
-      - uses: pnpm/action-setup@v2
+      - uses: pnpm/action-setup@v3
         name: Install pnpm
         with:
           version: ${{env.default_pnpm_version}}
@@ -53,7 +53,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v2
+      - uses: pnpm/action-setup@v3
         name: Install pnpm
         with:
           version: ${{env.default_pnpm_version}}
@@ -74,19 +74,14 @@ jobs:
     name: Build
     uses: ./.github/workflows/build.yml
 
-  test-ve:
-    name: test-ve
+  test-e2e:
+    name: test-e2e
     needs: build
     runs-on: ${{ matrix.os }}
-    services:
-      verdaccio:
-        image: verdaccio/verdaccio:5
-        ports:
-          - 4873:4873
     strategy:
       matrix:
-        os: [ubuntu-latest]
-        pm: ["pnpm", "npm", "yarn"]
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        pm: [pnpm, npm, yarn]
       fail-fast: false
 
     steps:
@@ -98,7 +93,7 @@ jobs:
         with:
           name: artifact
 
-      - uses: pnpm/action-setup@v2
+      - uses: pnpm/action-setup@v3
         name: Install pnpm
         if: ${{ matrix.pm == 'pnpm' }}
         with:
@@ -108,70 +103,29 @@ jobs:
         with:
           node-version: ${{env.default_node_version}}
 
-      - name: login to 'verdaccio'
-        run: npx npm-cli-login -u test -p 1234 -e test@domain.test -r http://localhost:4873
+      - name: setup 'verdaccio'
+        id: verdaccio
+        uses: ./.github/actions/verdaccio-actions
+        with:
+          verdaccio-config: .verdaccio/.verdaccio.yaml
+          token-config: true
+          token-content: gHz2lB9wOy+kDV4Cyy+v0w==
 
-      - name: version for 'verdaccio'
+      - name: version for test
         run: |
-          npm version patch --commit-hooks false --git-tag-version false
+          npm version major --commit-hooks false --git-tag-version false
 
       - name: publish to 'verdaccio'
         run: |
-          npm publish --registry http://localhost:4873
+          npm publish --registry http://${{ steps.verdaccio.outputs.listen }}
 
       - name: config for test
         run: |
           mkdir ../.temp
-          ${{ matrix.pm }} config set registry http://localhost:4873/
+          ${{ matrix.pm }} config set registry http://${{ steps.verdaccio.outputs.listen }}
 
       - name: Test via ${{ matrix.pm }}
         working-directory: ../.temp/
         timeout-minutes: 5
         run: |
           ${{ matrix.pm }} create hexo
-
-  test-ln:
-    name: test-ln
-    needs: build
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [windows-latest, macos-latest]
-        pm: ["pnpm", "npm"]
-      fail-fast: false
-
-    steps:
-      - uses: actions/checkout@v4
-        # with:
-        #   submodules: "recursive"
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: artifact
-
-      - uses: pnpm/action-setup@v2
-        name: Install pnpm
-        if: ${{ matrix.pm == 'pnpm' }}
-        with:
-          version: ${{env.default_pnpm_version}}
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{env.default_node_version}}
-
-      - name: config for test
-        run: |
-          mkdir ../temp
-          node scripts/getVersion.mjs
-
-      - name: Link via ${{ matrix.pm }}
-        working-directory: ../temp/
-        timeout-minutes: 5
-        run: |
-          ${{ matrix.pm }} add ../create-hexo/create-hexo-${{env.version}}.tgz
-
-      - name: Test via ${{ matrix.pm }}
-        working-directory: ../temp/
-        timeout-minutes: 5
-        run: |
-          ${{ matrix.pm }} exec create-hexo test

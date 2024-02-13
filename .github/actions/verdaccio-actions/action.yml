@@ -1,0 +1,89 @@
+name: "verdaccio-actions"
+author: "uiolee"
+description: "setup a local registry via Verdaccio."
+branding:
+  icon: "archive"
+  color: "gray-dark"
+
+inputs:
+  install-global:
+    description: "whether install verdaccio in global"
+    required: false
+    default: "true"
+  package-manager:
+    description: "specify which is uesd to install verdaccio"
+    required: false
+    default: "npm"
+  verdaccio-bin:
+    description: "the path of verdaccio"
+    required: false
+    default: "verdaccio"
+  verdaccio-setup:
+    description: "whether to setup verdaccio"
+    required: false
+    default: "true"
+  verdaccio-listen:
+    description: "Define host:port of registry"
+    required: false
+    default: "localhost:4873"
+  verdaccio-config:
+    description: "Set location of the configuration file"
+    required: true
+    default: ""
+  token-config:
+    description: "whether to setup token of local registry in npm configuration"
+    required: false
+    default: "false"
+  token-content:
+    description: "the authtoken of your verdaccio registry"
+    required: false
+  token-config-location:
+    description: "Define the location of token config. passed to `npm set ... --location <token-config-location>`"
+    required: false
+    default: "project"
+  registry-config:
+    description: "whether to setup registry setting in npm configuration"
+    required: false
+    default: "false"
+  registry-config-location:
+    description: "Define the location of register config. passed to `npm set ... --location <registry-config-location>`"
+    required: false
+    default: "project"
+
+outputs:
+  listen:
+    description: "verdaccio listen address"
+    value: ${{ inputs.verdaccio-listen }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install pnpm
+      uses: pnpm/action-setup@v3
+      if: ${{ inputs.package-manager == 'pnpm' }}
+      with:
+        version: "8"
+
+    - name: Install verdaccio global
+      shell: bash
+      if: ${{ inputs.install-global == 'true' }}
+      run: |
+        ${{ inputs.package-manager }} add -g verdaccio verdaccio-memory
+
+    - name: Setup verdaccio
+      shell: bash
+      if: ${{ inputs.verdaccio-setup == 'true' }}
+      run: |
+        nohup ${{ inputs.verdaccio-bin }} --config ${{ inputs.verdaccio-config }} --listen ${{ inputs.verdaccio-listen }} &>.verdaccio.log &
+
+    - name: set token
+      shell: bash
+      if: ${{ inputs.token-config == 'true' }}
+      run: |
+        npm config set //${{ inputs.verdaccio-listen }}/:_authToken ${{ inputs.token-content }} --location ${{ inputs.token-config-location }}
+
+    - name: set registry
+      shell: bash
+      if: ${{ inputs.registry-config == 'true' }}
+      run: |
+        npm config set registry http://${{ inputs.verdaccio-listen }}/ --location ${{ inputs.registry-config-location }}

@@ -31,7 +31,7 @@ jobs:
         with:
           submodules: "recursive"
 
-      - uses: pnpm/action-setup@v2
+      - uses: pnpm/action-setup@v3
         name: Install pnpm
         with:
           version: ${{env.default_pnpm_version}}
@@ -53,10 +53,6 @@ jobs:
         run: |
           echo -n $(cat .git/modules/hexo-starter/refs/heads/master) > hash
 
-      - name: pack
-        run: |
-          npm pack
-
       - uses: actions/upload-artifact@v4
         with:
           retention-days: 1
@@ -65,4 +61,3 @@ jobs:
           path: |
             bin
             hash
-            *.tgz
