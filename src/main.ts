@@ -3,8 +3,8 @@ import { fileURLToPath } from "node:url";
 
 import { Command, Option } from "commander";
 import { execa } from "execa";
-import { copy, ensureFile, remove } from "fs-extra";
-import { readdir, readFile } from "fs/promises";
+import { existsSync } from "node:fs";
+import { readdir, readFile, cp, rm, mkdir, writeFile } from "node:fs/promises";
 import { Logger } from "./log.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -47,7 +47,7 @@ const main = async () => {
 
   logger.group(`Copying \`${STARTER}\``);
   const [voidd, pm] = await Promise.all([
-    copy(STARTER_DIR, initOptions.blogPath)
+    cp(STARTER_DIR, initOptions.blogPath)
       .then(() => {
         logger.log(`Copied \`${STARTER}\` to "${initOptions.blogPath}"`);
       })
@@ -216,7 +216,7 @@ const post = () => {
 
   RM_FILES.forEach((item) => {
     ls.push(
-      remove(pathResolve(initOptions.blogPath, item))
+      rm(pathResolve(initOptions.blogPath, item), { force: true, recursive: true })
         .then(() => {
           logger.log(`remove "${item}" success!`);
         })
@@ -227,8 +227,16 @@ const post = () => {
   });
 
   ADD_FILES.forEach((item) => {
+    const file = pathResolve(initOptions.blogPath, item);
+    const dir = dirname(file);
+
     ls.push(
-      ensureFile(pathResolve(initOptions.blogPath, item))
+      mkdir(dir, { recursive: true })
+        .then(() => {
+          if (!existsSync(file)) {
+            return writeFile(file, "");
+          }
+        })
         .then(() => {
           logger.log(`add "${item}" success!`);
         })
