@@ -56,6 +56,7 @@ const main = async () => {
       })
       .catch((err) => {
         logger.error("Copy failed: ", err);
+        process.exit(1);
       })
       .finally(() => {
         logger.groupEnd();
