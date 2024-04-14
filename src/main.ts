@@ -193,26 +193,28 @@ const checkPackageManager = (): Promise<PM> => {
 };
 
 const installPackage = (pm: string) => {
-  const cp = execa(pm, ["install"], { cwd: initOptions.blogPath });
-  cp.stdout?.setEncoding("utf8");
-  cp.stdout?.on("data", (data) => {
+  const child = execa(pm, ["install"], {
+    cwd: initOptions.blogPath,
+  });
+  child.stdout?.setEncoding("utf8");
+  child.stdout?.on("data", (data) => {
     logger.log(pm, data);
   });
-  cp.stderr?.setEncoding("utf8");
-  cp.stderr?.on("data", function (data) {
+  child.stderr?.setEncoding("utf8");
+  child.stderr?.on("data", function (data) {
     logger.warn(pm, data);
   });
-  cp.on("error", (err) => {
+  child.on("error", (err) => {
     logger.error("Install error: ", err);
   });
-  cp.on("close", (code) => {
+  child.on("close", (code) => {
     if (code !== 0) {
       logger.error("Install error: ", code);
     } else {
       logger.info("Install package finshed");
     }
   });
-  return cp;
+  return child;
 };
 
 const post = () => {
