@@ -47,7 +47,10 @@ const main = async () => {
 
   logger.group(`Copying \`${STARTER}\``);
   const [voidd, pm] = await Promise.all([
-    cp(STARTER_DIR, initOptions.blogPath)
+    cp(STARTER_DIR, initOptions.blogPath, {
+      force: initOptions.force,
+      recursive: true,
+    })
       .then(() => {
         logger.log(`Copied \`${STARTER}\` to "${initOptions.blogPath}"`);
       })
