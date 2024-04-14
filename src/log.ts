@@ -1,5 +1,7 @@
 import { Console, ConsoleConstructorOptions } from "node:console";
-import { default as chalk } from "chalk";
+import { default as picocolors } from "picocolors";
+const { bold, bgWhite, gray, bgCyan, bgYellow, bgRed, bgBlue, underline } =
+  picocolors;
 
 class Logger extends Console {
   constructor(
@@ -11,23 +13,23 @@ class Logger extends Console {
     super(consoleOptions);
   }
   debug(...args: any[]) {
-    super.debug(chalk.bgWhite.bold("DEBUG"), ...args);
+    super.debug(bgWhite(bold("DEBUG")), ...args);
   }
   log(...args: any[]) {
-    super.log(chalk.gray.bold("LOG  "), ...args);
+    super.log(gray(bold("LOG  ")), ...args);
   }
   info(...args: any[]) {
-    super.info(chalk.bgCyan.bold("INFO "), ...args);
+    super.info(bgCyan(bold("INFO ")), ...args);
   }
   warn(...args: any[]) {
-    super.warn(chalk.bgYellow.bold("WARN "), ...args);
+    super.warn(bgYellow(bold("WARN ")), ...args);
   }
   error(...args: any[]) {
-    super.error(chalk.bgRed.bold("ERROR"), ...args);
+    super.error(bgRed(bold("ERROR")), ...args);
   }
   group(...args: any[]): void {
     super.log();
-    super.group(chalk.bgBlue.bold.underline(...args));
+    super.group(...args.map((arg) => bgBlue(bold(underline(arg)))));
   }
   t = super.trace;
   d = super.debug;

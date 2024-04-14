@@ -3,8 +3,8 @@ import { fileURLToPath } from "node:url";
 
 import { Command, Option } from "commander";
 import { execa } from "execa";
-import { copy, ensureFile, remove } from "fs-extra";
-import { readdir, readFile } from "fs/promises";
+import { existsSync } from "node:fs";
+import { readdir, readFile, cp, rm, mkdir, writeFile } from "node:fs/promises";
 import { Logger } from "./log.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -47,12 +47,16 @@ const main = async () => {
 
   logger.group(`Copying \`${STARTER}\``);
   const [voidd, pm] = await Promise.all([
-    copy(STARTER_DIR, initOptions.blogPath)
+    cp(STARTER_DIR, initOptions.blogPath, {
+      force: initOptions.force,
+      recursive: true,
+    })
       .then(() => {
         logger.log(`Copied \`${STARTER}\` to "${initOptions.blogPath}"`);
       })
       .catch((err) => {
         logger.error("Copy failed: ", err);
+        process.exit(1);
       })
       .finally(() => {
         logger.groupEnd();
@@ -189,26 +193,28 @@ const checkPackageManager = (): Promise<PM> => {
 };
 
 const installPackage = (pm: string) => {
-  const cp = execa(pm, ["install"], { cwd: initOptions.blogPath });
-  cp.stdout?.setEncoding("utf8");
-  cp.stdout?.on("data", (data) => {
+  const child = execa(pm, ["install"], {
+    cwd: initOptions.blogPath,
+  });
+  child.stdout?.setEncoding("utf8");
+  child.stdout?.on("data", (data) => {
     logger.log(pm, data);
   });
-  cp.stderr?.setEncoding("utf8");
-  cp.stderr?.on("data", function (data) {
+  child.stderr?.setEncoding("utf8");
+  child.stderr?.on("data", function (data) {
     logger.warn(pm, data);
   });
-  cp.on("error", (err) => {
+  child.on("error", (err) => {
     logger.error("Install error: ", err);
   });
-  cp.on("close", (code) => {
+  child.on("close", (code) => {
     if (code !== 0) {
       logger.error("Install error: ", code);
     } else {
       logger.info("Install package finshed");
     }
   });
-  return cp;
+  return child;
 };
 
 const post = () => {
@@ -216,7 +222,10 @@ const post = () => {
 
   RM_FILES.forEach((item) => {
     ls.push(
-      remove(pathResolve(initOptions.blogPath, item))
+      rm(pathResolve(initOptions.blogPath, item), {
+        force: true,
+        recursive: true,
+      })
         .then(() => {
           logger.log(`remove "${item}" success!`);
         })
@@ -227,8 +236,16 @@ const post = () => {
   });
 
   ADD_FILES.forEach((item) => {
+    const file = pathResolve(initOptions.blogPath, item);
+    const dir = dirname(file);
+
     ls.push(
-      ensureFile(pathResolve(initOptions.blogPath, item))
+      mkdir(dir, { recursive: true })
+        .then(() => {
+          if (!existsSync(file)) {
+            return writeFile(file, "");
+          }
+        })
         .then(() => {
           logger.log(`add "${item}" success!`);
         })
@@ -241,7 +258,7 @@ const post = () => {
   return Promise.all(ls);
 };
 const end = async () => {
-  logger.group("Finshed!", "\n");
+  logger.group("Finshed!");
   logger.info("Enjoy yourself!", "\n");
   logger.groupEnd();
   logger.timeEnd("create-hexo");
