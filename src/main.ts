@@ -220,7 +220,10 @@ const post = () => {
 
   RM_FILES.forEach((item) => {
     ls.push(
-      rm(pathResolve(initOptions.blogPath, item), { force: true, recursive: true })
+      rm(pathResolve(initOptions.blogPath, item), {
+        force: true,
+        recursive: true,
+      })
         .then(() => {
           logger.log(`remove "${item}" success!`);
         })
