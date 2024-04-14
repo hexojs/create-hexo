@@ -1,5 +1,14 @@
 import { Console, ConsoleConstructorOptions } from "node:console";
-import { bold, bgWhite, gray, bgCyan, bgYellow, bgRed, bgBlue, underline } from "picocolors";
+import { default as pc } from "picocolors";
+
+const bgWhite = pc.bgWhite;
+const gray = pc.gray;
+const bgCyan = pc.bgCyan;
+const bgYellow = pc.bgYellow;
+const bgRed = pc.bgRed;
+const bgBlue = pc.bgBlue;
+const bold = pc.bold;
+const underline = pc.underline;
 
 class Logger extends Console {
   constructor(
@@ -27,7 +36,7 @@ class Logger extends Console {
   }
   group(...args: any[]): void {
     super.log();
-    super.group(args.map(arg => bgBlue(bold(underline(arg)))));
+    super.group(...args.map((arg) => bgBlue(bold(underline(arg)))));
   }
   t = super.trace;
   d = super.debug;
