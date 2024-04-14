@@ -256,7 +256,7 @@ const post = () => {
   return Promise.all(ls);
 };
 const end = async () => {
-  logger.group("Finshed!", "\n");
+  logger.group("Finshed!");
   logger.info("Enjoy yourself!", "\n");
   logger.groupEnd();
   logger.timeEnd("create-hexo");
