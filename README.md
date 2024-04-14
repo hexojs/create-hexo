@@ -1,12 +1,12 @@
 # Create-Hexo
 
-[![GitHub Tag](https://img.shields.io/github/v/tag/uiolee/create-hexo?logo=github)](https://github.com/uiolee/create-hexo/tags)
-[![GitHub Release](https://img.shields.io/github/v/release/uiolee/create-hexo?logo=github)](https://github.com/uiolee/create-hexo/releases)
-[![GitHub commits since latest release](https://img.shields.io/github/commits-since/uiolee/create-hexo/latest?include_prereleases&sort=semver&logo=github)](https://github.com/uiolee/create-hexo/compare/...main)
-[![GitHub top language](https://img.shields.io/github/languages/top/uiolee/create-hexo?logo=github)](#create-hexo)
-[![Coverage Status](https://coveralls.io/repos/github/uiolee/create-hexo/badge.svg?branch=main)](https://coveralls.io/github/uiolee/create-hexo?branch=main)
-[![CI](https://github.com/uiolee/create-hexo/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/uiolee/create-hexo/actions/workflows/ci.yml)
-[![Libraries.io dependency status for GitHub repo](https://img.shields.io/librariesio/github/uiolee/create-hexo?logo=librariesdotio)](https://libraries.io/github/uiolee/create-hexo#dependencies)
+[![GitHub Tag](https://img.shields.io/github/v/tag/hexojs/create-hexo?logo=github)](https://github.com/hexojs/create-hexo/tags)
+[![GitHub Release](https://img.shields.io/github/v/release/hexojs/create-hexo?logo=github)](https://github.com/hexojs/create-hexo/releases)
+[![GitHub commits since latest release](https://img.shields.io/github/commits-since/hexojs/create-hexo/latest?include_prereleases&sort=semver&logo=github)](https://github.com/hexojs/create-hexo/compare/...main)
+[![GitHub top language](https://img.shields.io/github/languages/top/hexojs/create-hexo?logo=github)](#create-hexo)
+[![Coverage Status](https://coveralls.io/repos/github/hexojs/create-hexo/badge.svg?branch=main)](https://coveralls.io/github/hexojs/create-hexo?branch=main)
+[![CI](https://github.com/hexojs/create-hexo/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/hexojs/create-hexo/actions/workflows/ci.yml)
+[![Libraries.io dependency status for GitHub repo](https://img.shields.io/librariesio/github/hexojs/create-hexo?logo=librariesdotio)](https://libraries.io/github/hexojs/create-hexo#dependencies)
 
 > Hexo site initializer.
 
