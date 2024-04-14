@@ -1,14 +1,7 @@
 import { Console, ConsoleConstructorOptions } from "node:console";
-import { default as pc } from "picocolors";
-
-const bgWhite = pc.bgWhite;
-const gray = pc.gray;
-const bgCyan = pc.bgCyan;
-const bgYellow = pc.bgYellow;
-const bgRed = pc.bgRed;
-const bgBlue = pc.bgBlue;
-const bold = pc.bold;
-const underline = pc.underline;
+import { default as picocolors } from "picocolors";
+const { bold, bgWhite, gray, bgCyan, bgYellow, bgRed, bgBlue, underline } =
+  picocolors;
 
 class Logger extends Console {
   constructor(
