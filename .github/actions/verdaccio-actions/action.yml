@@ -38,7 +38,7 @@ inputs:
     description: "the authtoken of your verdaccio registry"
     required: false
   token-config-location:
-    description: "Define the location of token config. passed to `npm set ... --location <token-config-location>`"
+    description: "Define the location of token config. passed to `npm config set ... --location <token-config-location>`"
     required: false
     default: "project"
   registry-config:
@@ -46,7 +46,7 @@ inputs:
     required: false
     default: "false"
   registry-config-location:
-    description: "Define the location of register config. passed to `npm set ... --location <registry-config-location>`"
+    description: "Define the location of register config. passed to `npm config set ... --location <registry-config-location>`"
     required: false
     default: "project"
 
@@ -58,13 +58,7 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - name: Install pnpm
-      uses: pnpm/action-setup@v3
-      if: ${{ inputs.package-manager == 'pnpm' }}
-      with:
-        version: "8"
-
-    - name: Install verdaccio global
+    - name: Install verdaccio global via ${{ inputs.package-manager }}
       shell: bash
       if: ${{ inputs.install-global == 'true' }}
       run: |
