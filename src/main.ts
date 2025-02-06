@@ -108,7 +108,7 @@ const init = () => {
     })
     .addOption(
       new Option(
-        "-pm, --packageManager <packageManager>",
+        "--pm, --packageManager <packageManager>",
         "Specify the packageManager which use to Install packages",
       )
         .choices(["auto", "npm", "pnpm", "yarn", "bun"])
