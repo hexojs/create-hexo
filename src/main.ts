@@ -14,6 +14,7 @@ const __dirname = dirname(__filename);
 
 const logger = new Logger();
 logger.time("create-hexo");
+
 const STARTER = "hexo-starter";
 const STARTER_DIR = pathResolve(__dirname, `../${STARTER}/`);
 const RM_FILES = [".git", ".github"];
@@ -40,32 +41,16 @@ let initOptions: InitOptions = {
 const main = async () => {
   [packageJson, starterVersion] = await pre();
 
-  init();
+  parseArgs();
 
-  checkInfo();
+  printInfo();
 
   initOptions.force
     ? logger.warn("Running in force mode. It's dangerous!")
     : await checkPath(initOptions.sitePath);
 
   logger.group(`Copying \`${STARTER}\``);
-  const [voidd, pm] = await Promise.all([
-    cp(STARTER_DIR, initOptions.blogPath, {
-      force: initOptions.force,
-      recursive: true,
-    })
-      .then(() => {
-        logger.log(`Copied \`${STARTER}\` to "${initOptions.blogPath}"`);
-      })
-      .catch((err) => {
-        logger.error("Copy failed: ", err);
-        process.exit(1);
-      })
-      .finally(() => {
-        logger.groupEnd();
-      }),
-    checkPackageManager(),
-  ]);
+  const [_, pm] = await Promise.all([copyStarter(), checkPackageManager()]);
   logger.groupEnd();
 
   logger.group(`Installing packages via \`${pm}\``);
@@ -98,7 +83,8 @@ const pre = () => {
   logger.groupEnd();
   return Promise.all([packageJson, starterVersion]);
 };
-const init = () => {
+
+const parseArgs = () => {
   const program = new Command(packageJson.name)
     .argument("[site_directory]", "the folder that you want to load Hexo")
     .usage(`[site_directory]`)
@@ -141,7 +127,7 @@ const printUsage = () => {
   logger.groupEnd();
 };
 
-const checkInfo = () => {
+const printInfo = () => {
   logger.group("Env Info");
   logger.log("runtime path:    ", process.argv[0]);
   logger.log("runtime version: ", process.versions.node);
@@ -151,6 +137,23 @@ const checkInfo = () => {
   logger.log("argv:            ", process.argv.slice(2));
   logger.log("initOptions:     ", "\n", initOptions, "\n");
   logger.groupEnd();
+};
+
+const copyStarter = () => {
+  return cp(STARTER_DIR, initOptions.sitePath, {
+    force: initOptions.force,
+    recursive: true,
+  })
+    .then(() => {
+      logger.log(`Copied \`${STARTER}\` to "${initOptions.sitePath}"`);
+    })
+    .catch((err) => {
+      logger.error("Copy failed: ", err);
+      process.exit(1);
+    })
+    .finally(() => {
+      logger.groupEnd();
+    });
 };
 
 const checkPath = (path: string) => {
@@ -226,7 +229,7 @@ const installPackage = (pm: string) => {
 };
 
 const post = () => {
-  const ls: any[] = [];
+  const ls: Array<Promise<unknown>> = [];
 
   RM_FILES.forEach((item) => {
     ls.push(
@@ -265,8 +268,9 @@ const post = () => {
 
   return Promise.all(ls);
 };
+
 const end = async () => {
-  logger.group("Finshed!");
+  logger.group("Finished!");
   logger.info("Enjoy yourself!", "\n");
   logger.groupEnd();
   logger.timeEnd("create-hexo");
