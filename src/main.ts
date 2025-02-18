@@ -1,10 +1,12 @@
-import { dirname, sep, resolve as pathResolve } from "node:path";
+import { dirname, resolve as pathResolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { Command, Option } from "commander";
 import { spawn } from "node:child_process";
 import { existsSync } from "node:fs";
-import { readdir, readFile, cp, rm, mkdir, writeFile } from "node:fs/promises";
+import { cp, mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
+
+import { Command, Option } from "commander";
+
 import { Logger } from "./log.js";
 
 const __filename = fileURLToPath(import.meta.url);
