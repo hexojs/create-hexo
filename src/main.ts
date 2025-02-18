@@ -22,8 +22,8 @@ const ADD_FILES = ["scripts/.gitkeep", "source/_drafts/.gitkeep"];
 type PM = "pnpm" | "npm" | "yarn" | "bun";
 
 interface InitOptions {
-  blogName: string;
-  blogPath: string;
+  siteName: string;
+  sitePath: string;
   packageManager: PM | "auto";
   force: boolean;
 }
@@ -31,8 +31,8 @@ interface InitOptions {
 let packageJson: any;
 let starterVersion: string;
 let initOptions: InitOptions = {
-  blogName: "hexo-site",
-  blogPath: "./",
+  siteName: "hexo-site",
+  sitePath: "./",
   packageManager: "npm",
   force: false,
 };
@@ -46,7 +46,7 @@ const main = async () => {
 
   initOptions.force
     ? logger.warn("Running in force mode. It's dangerous!")
-    : await checkPath(initOptions.blogPath);
+    : await checkPath(initOptions.sitePath);
 
   logger.group(`Copying \`${STARTER}\``);
   const [voidd, pm] = await Promise.all([
@@ -100,14 +100,14 @@ const pre = () => {
 };
 const init = () => {
   const program = new Command(packageJson.name)
-    .argument("[blog_directory]", "the folder that you want to load Hexo")
-    .usage(`[blog_directory]`)
-    .action((blog_directory: string) => {
-      const path = blog_directory
-        ? (initOptions.blogPath = pathResolve(blog_directory))
-        : pathResolve(initOptions.blogPath);
-      initOptions.blogPath = path;
-      initOptions.blogName = path.split(sep).reverse()[0];
+    .argument("[site_directory]", "the folder that you want to load Hexo")
+    .usage(`[site_directory]`)
+    .action((site_directory: string) => {
+      const path = site_directory
+        ? (initOptions.sitePath = pathResolve(site_directory))
+        : pathResolve(initOptions.sitePath);
+      initOptions.sitePath = path;
+      initOptions.siteName = path.split(sep).reverse()[0];
     })
     .addOption(
       new Option(
@@ -134,10 +134,10 @@ const init = () => {
 
 const printUsage = () => {
   logger.group("Usage: ");
-  logger.l("  npm init hexo [blog_directory]", "\n");
-  logger.l(`  pnpm create hexo [blog_directory]`, "\n");
-  logger.l("  yarn create hexo [blog_directory]", "\n");
-  logger.l("  bun create hexo [blog_directory]", "\n");
+  logger.l("  npm init hexo [site_directory]", "\n");
+  logger.l(`  pnpm create hexo [site_directory]`, "\n");
+  logger.l("  yarn create hexo [site_directory]", "\n");
+  logger.l("  bun create hexo [site_directory]", "\n");
   logger.groupEnd();
 };
 
@@ -162,11 +162,11 @@ const checkPath = (path: string) => {
         );
         process.exit(1);
       } else {
-        logger.info(`Your hexo blog will be initialized in "${path}"`);
+        logger.info(`Your hexo site will be initialized in "${path}"`);
       }
     })
     .catch((err) => {
-      logger.info(`Your hexo blog will be initialized in "${path}"`);
+      logger.info(`Your hexo site will be initialized in "${path}"`);
     });
 };
 
@@ -198,7 +198,7 @@ const checkPackageManager = (): Promise<PM> => {
 const installPackage = (pm: string) => {
   return new Promise((resolve, reject) => {
     const child = spawn(pm, ["install"], {
-      cwd: initOptions.blogPath,
+      cwd: initOptions.sitePath,
       shell: true,
     });
     child.stdout?.setEncoding("utf8");
@@ -230,7 +230,7 @@ const post = () => {
 
   RM_FILES.forEach((item) => {
     ls.push(
-      rm(pathResolve(initOptions.blogPath, item), {
+      rm(pathResolve(initOptions.sitePath, item), {
         force: true,
         recursive: true,
       })
@@ -244,7 +244,7 @@ const post = () => {
   });
 
   ADD_FILES.forEach((item) => {
-    const file = pathResolve(initOptions.blogPath, item);
+    const file = pathResolve(initOptions.sitePath, item);
     const dir = dirname(file);
 
     ls.push(
