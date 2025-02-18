@@ -27,21 +27,24 @@ pnpm create hexo [path]
 # pnpm dlx create-hexo [path]
 ```
 
-> [pnpm.io](https://pnpm.io/)
+> - [pnpm create](https://pnpm.io/cli/create)
 
 ### npm
 
 ```bash
 npm init hexo [path]
 
+# npm create hexo [path]
 # npm exec create-hexo [path]
 # npx create-hexo [path]
 ```
 
-> [npm init](https://docs.npmjs.com/cli/commands/npm-init)
+> - [npm init](https://docs.npmjs.com/cli/commands/npm-init)
 
-### Yarn
+### Yarn 1 (Classic)
 
 ```bash
 yarn create hexo [path]
 ```
+
+> - [yarn create](https://classic.yarnpkg.com/docs/cli/create)
