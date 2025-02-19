@@ -2,7 +2,7 @@ import { dirname, sep, resolve as pathResolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { Command, Option } from "commander";
-import { execa } from "execa";
+import { spawn } from "node:child_process";
 import { existsSync } from "node:fs";
 import { readdir, readFile, cp, rm, mkdir, writeFile } from "node:fs/promises";
 import { Logger } from "./log.js";
@@ -18,6 +18,7 @@ const RM_FILES = [".git", ".github"];
 const ADD_FILES = ["scripts/.gitkeep", "source/_drafts/.gitkeep"];
 
 type PM = "pnpm" | "npm" | "yarn" | "bun";
+
 interface InitOptions {
   blogName: string;
   blogPath: string;
@@ -193,28 +194,33 @@ const checkPackageManager = (): Promise<PM> => {
 };
 
 const installPackage = (pm: string) => {
-  const child = execa(pm, ["install"], {
-    cwd: initOptions.blogPath,
+  return new Promise((resolve, reject) => {
+    const child = spawn(pm, ["install"], {
+      cwd: initOptions.blogPath,
+      shell: true,
+    });
+    child.stdout?.setEncoding("utf8");
+    child.stdout?.on("data", (data) => {
+      logger.log(pm, data);
+    });
+    child.stderr?.setEncoding("utf8");
+    child.stderr?.on("data", (data) => {
+      logger.warn(pm, data);
+    });
+    child.on("error", (err) => {
+      logger.error("Install error: ", err);
+    });
+    child.on("close", (code) => {
+      if (code !== 0) {
+        logger.error("Install error: ", code);
+        reject(code);
+      } else {
+        logger.info("Install package finished");
+        resolve(0);
+      }
+    });
+    return child;
   });
-  child.stdout?.setEncoding("utf8");
-  child.stdout?.on("data", (data) => {
-    logger.log(pm, data);
-  });
-  child.stderr?.setEncoding("utf8");
-  child.stderr?.on("data", function (data) {
-    logger.warn(pm, data);
-  });
-  child.on("error", (err) => {
-    logger.error("Install error: ", err);
-  });
-  child.on("close", (code) => {
-    if (code !== 0) {
-      logger.error("Install error: ", code);
-    } else {
-      logger.info("Install package finshed");
-    }
-  });
-  return child;
 };
 
 const post = () => {
