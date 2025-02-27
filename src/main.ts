@@ -1,10 +1,12 @@
-import { dirname, sep, resolve as pathResolve } from "node:path";
+import { dirname, resolve as pathResolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { Command, Option } from "commander";
 import { spawn } from "node:child_process";
 import { existsSync } from "node:fs";
-import { readdir, readFile, cp, rm, mkdir, writeFile } from "node:fs/promises";
+import { cp, mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
+
+import { Command, Option } from "commander";
+
 import { Logger } from "./log.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -12,6 +14,7 @@ const __dirname = dirname(__filename);
 
 const logger = new Logger();
 logger.time("create-hexo");
+
 const STARTER = "hexo-starter";
 const STARTER_DIR = pathResolve(__dirname, `../${STARTER}/`);
 const RM_FILES = [".git", ".github"];
@@ -20,8 +23,8 @@ const ADD_FILES = ["scripts/.gitkeep", "source/_drafts/.gitkeep"];
 type PM = "pnpm" | "npm" | "yarn" | "bun";
 
 interface InitOptions {
-  blogName: string;
-  blogPath: string;
+  siteName: string;
+  sitePath: string;
   packageManager: PM | "auto";
   force: boolean;
 }
@@ -29,8 +32,8 @@ interface InitOptions {
 let packageJson: any;
 let starterVersion: string;
 let initOptions: InitOptions = {
-  blogName: "hexo-site",
-  blogPath: "./",
+  siteName: "hexo-site",
+  sitePath: "./",
   packageManager: "npm",
   force: false,
 };
@@ -38,32 +41,16 @@ let initOptions: InitOptions = {
 const main = async () => {
   [packageJson, starterVersion] = await pre();
 
-  init();
+  parseArgs();
 
-  checkInfo();
+  printInfo();
 
   initOptions.force
     ? logger.warn("Running in force mode. It's dangerous!")
-    : await checkPath(initOptions.blogPath);
+    : await checkPath(initOptions.sitePath);
 
   logger.group(`Copying \`${STARTER}\``);
-  const [voidd, pm] = await Promise.all([
-    cp(STARTER_DIR, initOptions.blogPath, {
-      force: initOptions.force,
-      recursive: true,
-    })
-      .then(() => {
-        logger.log(`Copied \`${STARTER}\` to "${initOptions.blogPath}"`);
-      })
-      .catch((err) => {
-        logger.error("Copy failed: ", err);
-        process.exit(1);
-      })
-      .finally(() => {
-        logger.groupEnd();
-      }),
-    checkPackageManager(),
-  ]);
+  const [_, pm] = await Promise.all([copyStarter(), checkPackageManager()]);
   logger.groupEnd();
 
   logger.group(`Installing packages via \`${pm}\``);
@@ -96,16 +83,17 @@ const pre = () => {
   logger.groupEnd();
   return Promise.all([packageJson, starterVersion]);
 };
-const init = () => {
+
+const parseArgs = () => {
   const program = new Command(packageJson.name)
-    .argument("[blog_directory]", "the folder that you want to load Hexo")
-    .usage(`[blog_directory]`)
-    .action((blog_directory: string) => {
-      const path = blog_directory
-        ? (initOptions.blogPath = pathResolve(blog_directory))
-        : pathResolve(initOptions.blogPath);
-      initOptions.blogPath = path;
-      initOptions.blogName = path.split(sep).reverse()[0];
+    .argument("[site_directory]", "the folder that you want to load Hexo")
+    .usage(`[site_directory]`)
+    .action((site_directory: string) => {
+      const path = site_directory
+        ? (initOptions.sitePath = pathResolve(site_directory))
+        : pathResolve(initOptions.sitePath);
+      initOptions.sitePath = path;
+      initOptions.siteName = path.split(sep).reverse()[0];
     })
     .addOption(
       new Option(
@@ -132,14 +120,14 @@ const init = () => {
 
 const printUsage = () => {
   logger.group("Usage: ");
-  logger.l("  npm init hexo [blog_directory]", "\n");
-  logger.l(`  pnpm create hexo [blog_directory]`, "\n");
-  logger.l("  yarn create hexo [blog_directory]", "\n");
-  logger.l("  bun create hexo [blog_directory]", "\n");
+  logger.l("  npm init hexo [site_directory]", "\n");
+  logger.l(`  pnpm create hexo [site_directory]`, "\n");
+  logger.l("  yarn create hexo [site_directory]", "\n");
+  logger.l("  bun create hexo [site_directory]", "\n");
   logger.groupEnd();
 };
 
-const checkInfo = () => {
+const printInfo = () => {
   logger.group("Env Info");
   logger.log("runtime path:    ", process.argv[0]);
   logger.log("runtime version: ", process.versions.node);
@@ -151,6 +139,23 @@ const checkInfo = () => {
   logger.groupEnd();
 };
 
+const copyStarter = () => {
+  return cp(STARTER_DIR, initOptions.sitePath, {
+    force: initOptions.force,
+    recursive: true,
+  })
+    .then(() => {
+      logger.log(`Copied \`${STARTER}\` to "${initOptions.sitePath}"`);
+    })
+    .catch((err) => {
+      logger.error("Copy failed: ", err);
+      process.exit(1);
+    })
+    .finally(() => {
+      logger.groupEnd();
+    });
+};
+
 const checkPath = (path: string) => {
   return readdir(path)
     .then((files) => {
@@ -160,11 +165,11 @@ const checkPath = (path: string) => {
         );
         process.exit(1);
       } else {
-        logger.info(`Your hexo blog will be initialized in "${path}"`);
+        logger.info(`Your hexo site will be initialized in "${path}"`);
       }
     })
     .catch((err) => {
-      logger.info(`Your hexo blog will be initialized in "${path}"`);
+      logger.info(`Your hexo site will be initialized in "${path}"`);
     });
 };
 
@@ -196,7 +201,7 @@ const checkPackageManager = (): Promise<PM> => {
 const installPackage = (pm: string) => {
   return new Promise((resolve, reject) => {
     const child = spawn(pm, ["install"], {
-      cwd: initOptions.blogPath,
+      cwd: initOptions.sitePath,
       shell: true,
     });
     child.stdout?.setEncoding("utf8");
@@ -224,11 +229,11 @@ const installPackage = (pm: string) => {
 };
 
 const post = () => {
-  const ls: any[] = [];
+  const ls: Array<Promise<unknown>> = [];
 
   RM_FILES.forEach((item) => {
     ls.push(
-      rm(pathResolve(initOptions.blogPath, item), {
+      rm(pathResolve(initOptions.sitePath, item), {
         force: true,
         recursive: true,
       })
@@ -242,7 +247,7 @@ const post = () => {
   });
 
   ADD_FILES.forEach((item) => {
-    const file = pathResolve(initOptions.blogPath, item);
+    const file = pathResolve(initOptions.sitePath, item);
     const dir = dirname(file);
 
     ls.push(
@@ -263,8 +268,9 @@ const post = () => {
 
   return Promise.all(ls);
 };
+
 const end = async () => {
-  logger.group("Finshed!");
+  logger.group("Finished!");
   logger.info("Enjoy yourself!", "\n");
   logger.groupEnd();
   logger.timeEnd("create-hexo");

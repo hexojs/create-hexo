@@ -1,5 +1,7 @@
 import { Console, ConsoleConstructorOptions } from "node:console";
+
 import { default as picocolors } from "picocolors";
+
 const { bold, bgWhite, gray, bgCyan, bgYellow, bgRed, bgBlue, underline } =
   picocolors;
 
