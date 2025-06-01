@@ -54,7 +54,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "commander": "^13.1.0",
+    "commander": "^14.0.0",
     "picocolors": "^1.1.1"
   },
   "devDependencies": {
