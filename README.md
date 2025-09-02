@@ -6,7 +6,6 @@
 [![GitHub top language](https://img.shields.io/github/languages/top/hexojs/create-hexo?logo=github)](#create-hexo)
 [![Coverage Status](https://coveralls.io/repos/github/hexojs/create-hexo/badge.svg?branch=main)](https://coveralls.io/github/hexojs/create-hexo?branch=main)
 [![CI](https://github.com/hexojs/create-hexo/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/hexojs/create-hexo/actions/workflows/ci.yml)
-[![Libraries.io dependency status for GitHub repo](https://img.shields.io/librariesio/github/hexojs/create-hexo?logo=librariesdotio)](https://libraries.io/github/hexojs/create-hexo#dependencies)
 
 > Hexo site initializer.
 
