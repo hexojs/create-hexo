@@ -26,7 +26,7 @@ const result = await esbuild.build({
   write: true,
   platform: "node",
   mainFields: ["module"],
-  target: ["es2020", "node18"],
+  target: ["es2020", "node20"],
   metafile: true,
   color: true,
   logLevel: "debug",
