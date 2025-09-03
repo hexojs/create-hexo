@@ -46,18 +46,18 @@ const main = async () => {
   printInfo();
 
   initOptions.force
-    ? logger.warn("Running in force mode. It's dangerous!")
+    ? logger.w("Running in force mode. It's dangerous!")
     : await checkPath(initOptions.sitePath);
 
-  logger.group(`Copying \`${STARTER}\``);
+  logger.g(`Copying \`${STARTER}\``);
   const [_, pm] = await Promise.all([copyStarter(), checkPackageManager()]);
   logger.groupEnd();
 
-  logger.group(`Installing packages via \`${pm}\``);
+  logger.g(`Installing packages via \`${pm}\``);
   await installPackage(pm);
   logger.groupEnd();
 
-  logger.group(`Post processing`);
+  logger.g(`Post processing`);
   await post();
   logger.groupEnd();
 
@@ -65,8 +65,6 @@ const main = async () => {
 };
 
 const pre = () => {
-  logger.group("Start");
-
   const packageJson: Promise<object> = readFile(
     pathResolve(__dirname, "../package.json"),
     {
@@ -80,7 +78,6 @@ const pre = () => {
     encoding: "utf8",
   });
 
-  logger.groupEnd();
   return Promise.all([packageJson, starterVersion]);
 };
 
@@ -119,16 +116,16 @@ const parseArgs = () => {
 };
 
 const printUsage = () => {
-  logger.group("Usage: ");
-  logger.l("  npm init hexo [site_directory]", "\n");
-  logger.l(`  pnpm create hexo [site_directory]`, "\n");
-  logger.l("  yarn create hexo [site_directory]", "\n");
-  logger.l("  bun create hexo [site_directory]", "\n");
+  logger.g("Usage: ");
+  logger.log("  npm init hexo [site_directory]", "\n");
+  logger.log(`  pnpm create hexo [site_directory]`, "\n");
+  logger.log("  yarn create hexo [site_directory]", "\n");
+  logger.log("  bun create hexo [site_directory]", "\n");
   logger.groupEnd();
 };
 
 const printInfo = () => {
-  logger.group("Env Info");
+  logger.g("Env Info");
   logger.log("runtime path:    ", process.argv[0]);
   logger.log("runtime version: ", process.versions.node);
   logger.log(`bin path:        `, process.argv[1]);
@@ -145,10 +142,10 @@ const copyStarter = () => {
     recursive: true,
   })
     .then(() => {
-      logger.log(`Copied \`${STARTER}\` to "${initOptions.sitePath}"`);
+      logger.l(`Copied \`${STARTER}\` to "${initOptions.sitePath}"`);
     })
     .catch((err) => {
-      logger.error("Copy failed: ", err);
+      logger.e("Copy failed: ", err);
       process.exit(1);
     })
     .finally(() => {
@@ -160,16 +157,16 @@ const checkPath = (path: string) => {
   return readdir(path)
     .then((files) => {
       if (files.length !== 0) {
-        logger.error(
+        logger.e(
           `path: "${path}" is not empty, please specify a empty or nonexistent folder`,
         );
         process.exit(1);
       } else {
-        logger.info(`Your hexo site will be initialized in "${path}"`);
+        logger.i(`Your hexo site will be initialized in "${path}"`);
       }
     })
     .catch((err) => {
-      logger.info(`Your hexo site will be initialized in "${path}"`);
+      logger.i(`Your hexo site will be initialized in "${path}"`);
     });
 };
 
@@ -206,21 +203,21 @@ const installPackage = (pm: string) => {
     });
     child.stdout?.setEncoding("utf8");
     child.stdout?.on("data", (data) => {
-      logger.log(pm, data);
+      logger.l(pm, data);
     });
     child.stderr?.setEncoding("utf8");
     child.stderr?.on("data", (data) => {
-      logger.warn(pm, data);
+      logger.w(pm, data);
     });
     child.on("error", (err) => {
-      logger.error("Install error: ", err);
+      logger.e("Install error: ", err);
     });
     child.on("close", (code) => {
       if (code !== 0) {
-        logger.error("Install error: ", code);
+        logger.e("Install error: ", code);
         reject(code);
       } else {
-        logger.info("Install package finished");
+        logger.i("Install package finished");
         resolve(0);
       }
     });
@@ -238,10 +235,10 @@ const post = () => {
         recursive: true,
       })
         .then(() => {
-          logger.log(`remove "${item}" success!`);
+          logger.l(`remove "${item}" success!`);
         })
         .catch((err) => {
-          logger.error(`remove "${item}" fail: `, err);
+          logger.e(`remove "${item}" fail: `, err);
         }),
     );
   });
@@ -258,10 +255,10 @@ const post = () => {
           }
         })
         .then(() => {
-          logger.log(`add "${item}" success!`);
+          logger.l(`add "${item}" success!`);
         })
         .catch((err) => {
-          logger.error(`add "${item}" fail: `, err);
+          logger.e(`add "${item}" fail: `, err);
         }),
     );
   });
@@ -270,8 +267,8 @@ const post = () => {
 };
 
 const end = async () => {
-  logger.group("Finished!");
-  logger.info("Enjoy yourself!", "\n");
+  logger.g("Finished!");
+  logger.i("Enjoy yourself!", "\n");
   logger.groupEnd();
   logger.timeEnd("create-hexo");
 };

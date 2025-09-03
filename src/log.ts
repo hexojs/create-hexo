@@ -14,35 +14,25 @@ class Logger extends Console {
   ) {
     super(consoleOptions);
   }
-  debug(...args: any[]) {
+  d(...args: any[]) {
     super.debug(bgWhite(bold("DEBUG")), ...args);
   }
-  log(...args: any[]) {
+  l(...args: any[]) {
     super.log(gray(bold("LOG  ")), ...args);
   }
-  info(...args: any[]) {
+  i(...args: any[]) {
     super.info(bgCyan(bold("INFO ")), ...args);
   }
-  warn(...args: any[]) {
+  w(...args: any[]) {
     super.warn(bgYellow(bold("WARN ")), ...args);
   }
-  error(...args: any[]) {
+  e(...args: any[]) {
     super.error(bgRed(bold("ERROR")), ...args);
   }
-  group(...args: any[]): void {
+  g(...args: any[]): void {
     super.log();
     super.group(...args.map((arg) => bgBlue(bold(underline(arg)))));
   }
-  t = super.trace;
-  d = super.debug;
-  l = super.log;
-  i = super.info;
-  w = super.warn;
-  e = super.error;
-  time = super.time;
-  timetimeEnd = super.timeEnd;
 }
-const useless = () => {
-  console.log("asdasdasd");
-};
-export { Logger, useless };
+
+export { Logger };
