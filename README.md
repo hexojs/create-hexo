@@ -7,7 +7,9 @@
 [![Coverage Status](https://coveralls.io/repos/github/hexojs/create-hexo/badge.svg?branch=main)](https://coveralls.io/github/hexojs/create-hexo?branch=main)
 [![CI](https://github.com/hexojs/create-hexo/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/hexojs/create-hexo/actions/workflows/ci.yml)
 
-> Hexo site initializer.
+Hexo site initializer.
+
+Initialize a Hexo site with basical settings and folder structure.
 
 ## Usage
 
@@ -18,32 +20,8 @@
 [![NPM Downloads](https://img.shields.io/npm/dt/create-hexo?logo=npm)](#create-hexo)
 [![Libraries.io dependency status for latest release](https://img.shields.io/librariesio/release/npm/create-hexo?logo=librariesdotio)](https://libraries.io/npm/create-hexo/tree)
 
-### pnpm
-
-```bash
-pnpm create hexo [path]
-
-# pnpm dlx create-hexo [path]
-```
-
-> - [pnpm create](https://pnpm.io/cli/create)
-
-### npm
-
-```bash
-npm init hexo [path]
-
-# npm create hexo [path]
-# npm exec create-hexo [path]
-# npx create-hexo [path]
-```
-
-> - [npm init](https://docs.npmjs.com/cli/commands/npm-init)
-
-### Yarn 1 (Classic)
-
-```bash
-yarn create hexo [path]
-```
-
-> - [yarn create](https://classic.yarnpkg.com/docs/cli/create)
+| package manager                                                 | cmd                                                                                                                     |
+| --------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| [pnpm](https://pnpm.io/cli/create)                              | `pnpm create hexo` <br/> or <br/> `pnpm dlx create-hexo`                                                                |
+| [npm](https://docs.npmjs.com/cli/commands/npm-init)             | `npm init hexo` <br/> or <br/> `npm create hexo` <br/> or <br/> `npm exec create-hexo` <br/> or <br/> `npx create-hexo` |
+| [Yarn 1 (Classic)](https://classic.yarnpkg.com/docs/cli/create) | `yarn create hexo`                                                                                                      |
