@@ -1,6 +1,6 @@
 {
   "name": "create-hexo",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Hexo site initializer. (`npm create hexo`) ",
   "keywords": [
     "hexo",
