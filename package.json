@@ -48,7 +48,8 @@
     "tsb": "tsc -b -v",
     "tsbf": "tsc -b -v -f",
     "tsbw": "tsc -b -v -w",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "watch": "pnpm run esb --watch"
   },
   "dependencies": {
     "commander": "^14.0.0",

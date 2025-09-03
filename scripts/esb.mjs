@@ -1,18 +1,20 @@
 import * as esbuild from "esbuild";
 
-import { writeFile } from "fs/promises";
+import { writeFile } from "node:fs/promises";
+
+const args = process.argv.slice(2);
 
 const saveMetafile = (metafile) => {
   return writeFile(".esbuild.metafile.json", JSON.stringify(metafile, null, 2));
 };
 
 const formatMetafile = (metafile, verbose = true) => {
-  return esbuild.analyzeMetafile(result.metafile, {
+  return esbuild.analyzeMetafile(metafile, {
     verbose: verbose,
   });
 };
 
-const result = await esbuild.build({
+const esbuildOptions = {
   entryPoints: ["src/index.ts"],
   bundle: true,
   outfile: "bin/index.mjs",
@@ -30,15 +32,30 @@ const result = await esbuild.build({
   metafile: true,
   color: true,
   logLevel: "debug",
-});
+  legalComments: "linked",
+};
 
-console.log(result);
+if (args.includes("--watch")) {
+  let ctx = await esbuild.context({ ...esbuildOptions });
+  try {
+    await ctx.watch().then(() => {
+      console.log("Start watching...");
+    });
+  } catch (e) {
+    await ctx.dispose().then(() => {
+      console.log("Stopped watching.");
+    });
+    throw e;
+  }
+} else {
+  const result = await esbuild.build({ ...esbuildOptions });
 
-const ls = [
-  saveMetafile(result.metafile),
-  formatMetafile(result.metafile, true),
-];
+  const pms = [
+    saveMetafile(result.metafile),
+    formatMetafile(result.metafile, true).then((analysis) =>
+      console.log(analysis),
+    ),
+  ];
 
-const [nulll, analy] = await Promise.all(ls);
-
-console.log(analy);
+  await Promise.all(pms);
+}
