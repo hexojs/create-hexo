@@ -41,7 +41,7 @@ jobs:
         with:
           name: ${{ env.artifact_name }}
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           # node-version: ${{ env.default_node_version }}
           registry-url: https://registry.npmjs.org/
@@ -64,7 +64,7 @@ jobs:
         with:
           submodules: "recursive"
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           # node-version: ${{ env.default_node_version }}
           registry-url: "https://npm.pkg.github.com/"

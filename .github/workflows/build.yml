@@ -42,13 +42,13 @@ jobs:
         with:
           version: ${{ inputs.pnpm_version }}
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         name: Setup Node without cache
         if: ${{ !inputs.cache }}
         with:
           node-version: ${{ inputs.node_version }}
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         name: Setup Node with cache
         if: ${{ inputs.cache }}
         with:

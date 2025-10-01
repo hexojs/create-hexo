@@ -40,7 +40,7 @@ jobs:
         with:
           version: ${{env.default_pnpm_version}}
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: ${{env.default_node_version}}
           cache: pnpm
@@ -63,7 +63,7 @@ jobs:
         with:
           version: ${{env.default_pnpm_version}}
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: ${{env.default_node_version}}
           cache: pnpm
@@ -104,7 +104,7 @@ jobs:
         with:
           version: ${{env.default_pnpm_version}}
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: ${{env.default_node_version}}
 
