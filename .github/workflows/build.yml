@@ -67,7 +67,7 @@ jobs:
         run: |
           pnpm run hash
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           retention-days: 1
           compression-level: 1
