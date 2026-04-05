@@ -44,7 +44,7 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          # node-version: ${{ env.default_node_version }}
+          node-version: ${{ env.default_node_version }}
           registry-url: https://registry.npmjs.org/
 
       - run: npm publish --provenance --access public --registry=https://registry.npmjs.org/
@@ -65,7 +65,7 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          # node-version: ${{ env.default_node_version }}
+          node-version: ${{ env.default_node_version }}
           registry-url: "https://npm.pkg.github.com/"
           # Defaults to the user or organization that owns the workflow file
           scope: ${{env.SCOPE}}
