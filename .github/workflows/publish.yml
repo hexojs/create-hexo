@@ -31,6 +31,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       id-token: write
     steps:
       - uses: actions/checkout@v6
@@ -43,12 +44,10 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          # node-version: ${{ env.default_node_version }}
+          node-version: ${{ env.default_node_version }}
           registry-url: https://registry.npmjs.org/
 
       - run: npm publish --provenance --access public --registry=https://registry.npmjs.org/
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
 
   publish-ghp:
     needs: build
@@ -66,7 +65,7 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          # node-version: ${{ env.default_node_version }}
+          node-version: ${{ env.default_node_version }}
           registry-url: "https://npm.pkg.github.com/"
           # Defaults to the user or organization that owns the workflow file
           scope: ${{env.SCOPE}}
