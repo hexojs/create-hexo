@@ -47,8 +47,6 @@ jobs:
           registry-url: https://registry.npmjs.org/
 
       - run: npm publish --provenance --access public --registry=https://registry.npmjs.org/
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
 
   publish-ghp:
     needs: build
