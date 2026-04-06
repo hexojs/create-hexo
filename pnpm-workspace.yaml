@@ -1,0 +1,3 @@
+ignorePatchFailures: false
+patchedDependencies:
+  picocolors: patches/picocolors.patch

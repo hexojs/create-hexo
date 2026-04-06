@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  picocolors:
+    hash: 2bfd258371b00547d17637e2fed3e59134918697992bf30a6df2e30c2bfbdde5
+    path: patches/picocolors.patch
+
 importers:
 
   .:
@@ -35,7 +40,7 @@ importers:
         version: 5.5.4(eslint-config-prettier@10.1.8(eslint@8.57.1))(eslint@8.57.1)(prettier@3.3.2)
       picocolors:
         specifier: ^1.1.1
-        version: 1.1.1
+        version: 1.1.1(patch_hash=2bfd258371b00547d17637e2fed3e59134918697992bf30a6df2e30c2bfbdde5)
       typescript:
         specifier: ^5.9.2
         version: 5.9.2
@@ -1357,7 +1362,7 @@ snapshots:
 
   path-type@4.0.0: {}
 
-  picocolors@1.1.1: {}
+  picocolors@1.1.1(patch_hash=2bfd258371b00547d17637e2fed3e59134918697992bf30a6df2e30c2bfbdde5): {}
 
   picomatch@2.3.1: {}
 
