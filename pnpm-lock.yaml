@@ -11,9 +11,6 @@ importers:
       commander:
         specifier: ^14.0.0
         version: 14.0.0
-      picocolors:
-        specifier: ^1.1.1
-        version: 1.1.1
     devDependencies:
       '@types/node':
         specifier: ^22
@@ -36,6 +33,9 @@ importers:
       eslint-plugin-prettier:
         specifier: ^5.5.4
         version: 5.5.4(eslint-config-prettier@10.1.8(eslint@8.57.1))(eslint@8.57.1)(prettier@3.3.2)
+      picocolors:
+        specifier: ^1.1.1
+        version: 1.1.1
       typescript:
         specifier: ^5.9.2
         version: 5.9.2
