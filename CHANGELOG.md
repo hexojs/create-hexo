@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.0](https://github.com/hexojs/create-hexo/compare/v0.8.1...v0.9.0) (2026-04-08)
+
+
+### Features
+
+* update node engine requirement from &gt;=20 to &gt;=22 ([#62](https://github.com/hexojs/create-hexo/issues/62)) ([4c2559e](https://github.com/hexojs/create-hexo/commit/4c2559e714bd031653486f5f1793fc355e7710a8))
+
 ## [0.8.1](https://github.com/hexojs/create-hexo/compare/v0.8.0...v0.8.1) (2026-04-08)
 
 
