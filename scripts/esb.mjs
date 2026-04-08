@@ -28,7 +28,7 @@ const esbuildOptions = {
   treeShaking: true,
   write: true,
   platform: "node",
-  target: ["es2020", "node20"],
+  target: ["es2020", "node22"],
   metafile: true,
   color: true,
   logLevel: "debug",
