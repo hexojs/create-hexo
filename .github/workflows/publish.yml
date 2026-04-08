@@ -1,100 +1,109 @@
-# This workflow will run tests using node and then publish a package to GitHub Packages when a release is created
-# For more information see: https://docs.github.com/en/actions/publishing-packages/publishing-nodejs-packages
-
 name: publish
 
 on:
-  workflow_dispatch:
-    inputs:
-      version:
-        description: ""
-        required: true
-        default: "keep current"
-        type: choice
-        options:
-          - "keep current"
-
   push:
-    tags:
-      - "v*.*.*"
+    branches:
+      - "main"
+
+  workflow_dispatch:
 
 env:
   default_node_version: "lts/*"
   artifact_name: build_${{ github.sha }}
+
+  concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
   build:
     name: Build
     uses: ./.github/workflows/build.yml
 
-  publish-npm:
+  release-please:
     needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    outputs:
+      release_created: ${{ steps.release_please_action.outputs.release_created }}
+    steps:
+      - uses: googleapis/release-please-action@v4
+        id: release_please_action
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          release-type: node
+
+  publish-npm:
+    if: ${{ needs.release-please.outputs.release_created }}
+    needs: release-please
     runs-on: ubuntu-latest
     permissions:
       contents: read
       id-token: write
+    env:
+      registry_url: "https://registry.npmjs.org"
+    environment:
+      name: npmjs
+      url: https://www.npmjs.com/create-hexo
     steps:
       - uses: actions/checkout@v6
+        if: ${{ needs.release-please.outputs.release_created }}
         with:
           submodules: "recursive"
 
       - uses: actions/download-artifact@v8
+        if: ${{ needs.release-please.outputs.release_created }}
         with:
           name: ${{ env.artifact_name }}
 
       - uses: actions/setup-node@v6
+        if: ${{ needs.release-please.outputs.release_created }}
         with:
           node-version: ${{ env.default_node_version }}
-          registry-url: https://registry.npmjs.org/
+          registry-url: ${{ env.registry_url }}
 
-      - run: npm publish --provenance --access public --registry=https://registry.npmjs.org/
+      - run: npm publish --provenance --access public --registry=${{ env.registry_url }}
+        if: ${{ needs.release-please.outputs.release_created }}
 
   publish-ghp:
-    needs: build
+    if: ${{ needs.release-please.outputs.release_created }}
+    needs: release-please
     runs-on: ubuntu-latest
-    env:
-      SCOPE: "@${{github.repository_owner}}"
     permissions:
       contents: read
       packages: write
       id-token: write
+    env:
+      SCOPE: "@${{ github.repository_owner }}"
+      registry_url: "https://npm.pkg.github.com/"
+    environment:
+      name: Github Packages
+      url: https://github.com/hexojs/create-hexo/pkgs/npm/create-hexo
     steps:
       - uses: actions/checkout@v6
+        if: ${{ needs.release-please.outputs.release_created }}
         with:
           submodules: "recursive"
 
-      - uses: actions/setup-node@v6
-        with:
-          node-version: ${{ env.default_node_version }}
-          registry-url: "https://npm.pkg.github.com/"
-          # Defaults to the user or organization that owns the workflow file
-          scope: ${{env.SCOPE}}
-          token: ${{secrets.GITHUB_TOKEN}}
-          always-auth: true
-
       - uses: actions/download-artifact@v8
+        if: ${{ needs.release-please.outputs.release_created }}
         with:
           name: ${{ env.artifact_name }}
+
+      - uses: actions/setup-node@v6
+        if: ${{ needs.release-please.outputs.release_created }}
+        with:
+          node-version: ${{ env.default_node_version }}
+          registry-url: ${{ env.registry_url }}
+          # Defaults to the user or organization that owns the workflow file
+          scope: ${{ env.SCOPE }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: rename package name
         run: |
           node ./scripts/renamePackage.mjs
 
-      - run: npm publish --access public --registry=https://npm.pkg.github.com
+      - run: npm publish --access public --registry=${{ env.registry_url }}
         env:
-          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
-
-  release:
-    name: Release
-    needs: publish-npm
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      discussions: write
-    steps:
-      - name: Release
-        uses: softprops/action-gh-release@v2
-        if: startsWith(github.ref, 'refs/tags/')
-        with:
-          generate_release_notes: true
-          discussion_category_name: "Announcements"
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
