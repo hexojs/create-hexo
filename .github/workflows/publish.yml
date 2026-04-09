@@ -34,7 +34,6 @@ jobs:
         id: release_please_action
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          release-type: node
 
   publish-npm:
     needs: [ release-please, build ]
