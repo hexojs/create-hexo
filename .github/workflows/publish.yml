@@ -11,7 +11,8 @@ env:
   default_node_version: "lts/*"
   artifact_name: build_${{ github.sha }}
 
-  concurrency: ${{ github.workflow }}-${{ github.ref }}
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
   build:
