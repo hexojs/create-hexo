@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.9.1](https://github.com/hexojs/create-hexo/compare/v0.9.0...v0.9.1) (2026-04-09)
+
+
+### Documentation
+
+* **README:** simplify README.md ([8104fbb](https://github.com/hexojs/create-hexo/commit/8104fbb6668c852a06e088fa60746fd0b315cda3))
+
+
+### Miscellaneous Chores
+
+* correct license to MIT in package.json ([ddb2a99](https://github.com/hexojs/create-hexo/commit/ddb2a99f32b71b9c28afee1dddee2c7ccaf47feb))
+
+
+### Continuous Integration
+
+* **publish:** correct syntax in concurrency ([356aab5](https://github.com/hexojs/create-hexo/commit/356aab531becf488df182b487eb2422b7e7fde30))
+* **publish:** customize release-please-config to include more messages in changelog ([48f9c8e](https://github.com/hexojs/create-hexo/commit/48f9c8e52295f11292476460530e48e16b30fa74))
+* **publish:** improve jobs dependency chain ([b040155](https://github.com/hexojs/create-hexo/commit/b040155b99c58d4222637467117c01644d4ec547))
+
 ## [0.9.0](https://github.com/hexojs/create-hexo/compare/v0.8.1...v0.9.0) (2026-04-08)
 
 
