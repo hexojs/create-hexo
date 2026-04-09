@@ -16,11 +16,12 @@ concurrency:
 
 jobs:
   build:
+    needs: release-please
+    if: ${{ needs.release-please.outputs.release_created }}
     name: Build
     uses: ./.github/workflows/build.yml
 
   release-please:
-    needs: build
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -36,8 +37,8 @@ jobs:
           release-type: node
 
   publish-npm:
+    needs: [ release-please, build ]
     if: ${{ needs.release-please.outputs.release_created }}
-    needs: release-please
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -68,8 +69,8 @@ jobs:
         if: ${{ needs.release-please.outputs.release_created }}
 
   publish-ghp:
+    needs: [ release-please, build ]
     if: ${{ needs.release-please.outputs.release_created }}
-    needs: release-please
     runs-on: ubuntu-latest
     permissions:
       contents: read
