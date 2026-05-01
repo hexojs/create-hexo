@@ -37,7 +37,7 @@ jobs:
         with:
           submodules: "recursive"
 
-      - uses: pnpm/action-setup@v5
+      - uses: pnpm/action-setup@v6
         name: Install pnpm
         with:
           version: ${{ inputs.pnpm_version }}
