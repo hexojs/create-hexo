@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.9.2](https://github.com/hexojs/create-hexo/compare/v0.9.1...v0.9.2) (2026-05-04)
+
+
+### Miscellaneous Chores
+
+* **deps:** bump googleapis/release-please-action from 4 to 5 ([#73](https://github.com/hexojs/create-hexo/issues/73)) ([7486a66](https://github.com/hexojs/create-hexo/commit/7486a663d3b31d58c27a61dddacae148eb583d75))
+* **deps:** bump pnpm/action-setup from 5 to 6 ([#74](https://github.com/hexojs/create-hexo/issues/74)) ([39f4473](https://github.com/hexojs/create-hexo/commit/39f4473b61921138e02eab50858fb90d45c2155c))
+
 ## [0.9.1](https://github.com/hexojs/create-hexo/compare/v0.9.0...v0.9.1) (2026-04-09)
 
 
