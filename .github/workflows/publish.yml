@@ -48,7 +48,7 @@ jobs:
       name: npmjs
       url: https://www.npmjs.com/create-hexo
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         if: ${{ needs.release-please.outputs.release_created }}
         with:
           submodules: "recursive"
@@ -82,7 +82,7 @@ jobs:
       name: Github Packages
       url: https://github.com/hexojs/create-hexo/pkgs/npm/create-hexo
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         if: ${{ needs.release-please.outputs.release_created }}
         with:
           submodules: "recursive"
