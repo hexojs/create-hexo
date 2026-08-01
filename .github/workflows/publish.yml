@@ -58,7 +58,7 @@ jobs:
         with:
           name: ${{ env.artifact_name }}
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         if: ${{ needs.release-please.outputs.release_created }}
         with:
           node-version: ${{ env.default_node_version }}
@@ -92,7 +92,7 @@ jobs:
         with:
           name: ${{ env.artifact_name }}
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         if: ${{ needs.release-please.outputs.release_created }}
         with:
           node-version: ${{ env.default_node_version }}
